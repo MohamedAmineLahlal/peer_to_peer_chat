@@ -1,6 +1,7 @@
 import React from "react";
+import "../styles/Input.css";
 
-export default function Input(props) {
+export default function MainInput(props) {
   return (
     <input
       type="text"

@@ -1,11 +1,22 @@
 import React from "react";
-import LandingPage from "./components/LandingPage/LandingPage.jsx";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import LandingPageJoinRoom from "./components/LandingPage/LandingPageJoinRoom.jsx";
+import LandingPageCreateRoom from "./components/LandingPage/LandingPageCreateRoom";
+import ChatRoom from "./components/ChatRoom/ChatRoom";
+import NoPage from "./components/NoPage";
 
 function App() {
   return (
-    <>
-      <LandingPage />
-    </>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<LandingPageJoinRoom />} />
+          <Route path="/create-room" element={<LandingPageCreateRoom />} />
+          <Route path="/chat-room" element={<ChatRoom />} />
+          <Route path="*" element={<NoPage />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

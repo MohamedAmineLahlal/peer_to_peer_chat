@@ -1,0 +1,12 @@
+.main-button {
+  border-radius: 10px;
+  width: calc(100% + 12px);
+  height: 45px;
+  background: linear-gradient(90deg, #005899 0%, #9258dc 100%);
+  border: 0;
+  outline: none;
+  cursor: pointer;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+}

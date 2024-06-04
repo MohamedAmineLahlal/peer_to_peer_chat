@@ -1,0 +1,31 @@
+.search-input--chat-room {
+  background-color: #3e3c3f;
+  padding: 5px;
+  padding-left: 15px;
+  height: 45px;
+  width: 100%;
+  border-radius: 10px;
+  color: white;
+}
+
+.search-input--chat-room:focus {
+  outline: 0;
+}
+
+.search-btn--chat-room {
+  position: absolute !important;
+  top: 3px;
+  right: 10px;
+}
+
+.search-btn--chat-room svg {
+  background-color: #3e3c3f;
+  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+}
+
+.searchBarContainer--chat-room {
+  width: 100%;
+  margin-bottom: 10px !important;
+}
