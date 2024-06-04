@@ -48,7 +48,7 @@ export default function MainTabs() {
   return (
     <Tabs
       defaultValue="All Chats"
-      className="w-[400px] text-white main-tabs--chat-room"
+      className="w-100 text-white main-tabs--chat-room"
     >
       <TabsList className="main-tabs-container--chat-room">
         <TabsTrigger value="All Chats" className="tab-element--chat-room">

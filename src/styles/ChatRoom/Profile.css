@@ -1,0 +1,30 @@
+.container-profile {
+  background-color: #3e3c3f;
+}
+
+.image-container--profile {
+  width: 45px;
+  height: 45px;
+  background-color: #3e3c3f;
+}
+
+.image-container--profile img {
+  border-radius: 50%;
+}
+
+.info-container--profile {
+  margin-left: 10px;
+  background-color: #3e3c3f;
+  color: white;
+}
+
+.info-container--profile h3 {
+  font-weight: 500;
+  background-color: #3e3c3f;
+}
+
+.info-container--profile p {
+  font-weight: normal;
+  font-size: 13px;
+  background-color: #3e3c3f;
+}

@@ -9,3 +9,7 @@
   color: white;
   font-size: 16px;
 }
+
+.input-text--landing-page:focus {
+  outline: 0;
+}

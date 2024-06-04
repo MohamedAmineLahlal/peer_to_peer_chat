@@ -25,6 +25,9 @@
 .chat-container--chat-room {
   display: flex;
   flex-direction: column;
+  width: 100% !important;
+  height: 100vh;
+  gap: 5px;
 }
 
 .chats-container--chat-room {
@@ -35,8 +38,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 450px;
   padding: 15px;
+  height: 100vh;
 }
 
 .button--chat-room {
@@ -66,4 +69,23 @@
   flex-direction: column !important;
   align-items: center !important;
   width: 100%;
+}
+
+.top-level--chat-room {
+  background-color: #3e3c3f;
+}
+.chat-display--chat-room {
+  height: 100vh;
+  padding: 15px;
+  min-height: 650px;
+}
+
+.content-wrapper--chat-room {
+  background-color: #3e3c3f;
+  border-radius: 10px;
+  height: 100%;
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
 }

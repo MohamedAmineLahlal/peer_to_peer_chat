@@ -1,0 +1,43 @@
+.input-with-sendBtn--chat-room {
+  gap: 5px;
+  background-color: #3e3c3f;
+}
+.input--chat-room {
+  display: flex;
+  height: 45px;
+  background-color: white !important;
+  width: 100%;
+  align-items: center;
+  padding: 0;
+  border-radius: 5px;
+  padding: 10px !important;
+}
+
+.input--chat-room input {
+  background-color: white;
+  outline: none;
+  width: 100%;
+}
+
+.input--chat-room input::placeholder {
+  color: #000;
+  font-weight: bold;
+  font-size: 13px;
+  font-family: "Mulish", sans-serif;
+}
+
+.input--chat-room svg {
+  height: 25px;
+  width: 25px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.addFile--chat-room {
+  margin-right: 5px;
+}
+
+.emojieImage-container--chat-room {
+  gap: 5px;
+  background-color: white;
+}
