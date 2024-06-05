@@ -1,10 +1,20 @@
 .message-wrapper--chat {
   padding: 10px;
   color: white;
-  width: fit-content;
   border-radius: 5px;
   background-color: #3e3c3f;
   display: flex;
+  max-width: 250px;
+  flex-wrap: wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  overflow: hidden; /* Hide the overflow content */
+}
+
+.message-content--chat {
+  flex: 1; /* Allow the message content to grow */
+  min-width: 0; /* Allow the content to shrink beyond its minimum width */
+  text-overflow: ellipsis; /* Truncate long words with an ellipsis */
 }
 
 .info-wrapper--chat {
@@ -12,10 +22,6 @@
   align-items: flex-end;
   gap: 5px;
   background-color: #3e3c3f;
-}
-
-.message--chat {
-  order: 2;
 }
 
 .time-container--chat {

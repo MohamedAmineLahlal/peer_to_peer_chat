@@ -20,7 +20,14 @@ export default function Form(props) {
             placeholder={isJoinPage ? "Room Id..." : "Room Name..."}
           />
           <MainInput inputName="room-passkey" placeholder="Room PassKey..." />
-          <MainButton description={isJoinPage ? "Join" : "Create"} />
+          <MainButton
+            description={isJoinPage ? "Join" : "Create"}
+            onClick={
+              isJoinPage
+                ? () => console.log("Join Button Clicked")
+                : props.onClick
+            }
+          />
         </div>
         {isJoinPage ? (
           <Link to="/create-room" className="create-room-link--landing-page">

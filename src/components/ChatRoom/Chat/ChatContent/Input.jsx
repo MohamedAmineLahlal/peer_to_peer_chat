@@ -3,7 +3,7 @@ import "../../../../styles/ChatRoom/Input.css";
 import SendBtn from "./SendBtn";
 import { Send } from "lucide-react";
 
-export default function Input() {
+export default function Input(props) {
   return (
     <div className="input-with-sendBtn--chat-room flex w-full">
       <div className="input--chat-room">
@@ -25,8 +25,10 @@ export default function Input() {
           type="text"
           name="message"
           id="message"
+          onChange={props.onChange}
           placeholder="Type Your Message..."
           className="message-input--chat-room"
+          value={props.value}
         />
         <div className="emojieImage-container--chat-room flex">
           <div className="emojie--chat-room">
@@ -59,7 +61,7 @@ export default function Input() {
           </div>
         </div>
       </div>
-      <SendBtn />
+      <SendBtn onClick={props.onClick} />
     </div>
   );
 }

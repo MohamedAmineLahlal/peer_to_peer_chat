@@ -4,12 +4,12 @@ import Input from "./ChatContent/Input";
 import SendBtn from "./ChatContent/SendBtn";
 import "../../../styles/ChatRoom/ChatWrapper.css";
 
-export default function ChatWrapper() {
+export default function ChatWrapper(props) {
   return (
     <div className="chat-wrapper--chat-room">
-      <Chat />
+      <Chat messages={props.messages} />
       <div className="input-container--chat-room">
-        <Input />
+        <Input onChange={props.onChange} onClick={props.onClick} />
       </div>
     </div>
   );
