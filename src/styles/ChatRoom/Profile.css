@@ -28,3 +28,13 @@
   font-size: 13px;
   background-color: #3e3c3f;
 }
+
+.tooltip-descsription--profile {
+  color: white !important;
+  background-color: #3e3c3f !important;
+}
+
+.tooltip--profile {
+  background-color: #3e3c3f !important;
+  border-radius: 10px;
+}

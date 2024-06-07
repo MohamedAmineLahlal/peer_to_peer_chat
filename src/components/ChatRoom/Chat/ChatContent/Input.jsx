@@ -5,7 +5,7 @@ import { Send } from "lucide-react";
 
 export default function Input(props) {
   return (
-    <div className="input-with-sendBtn--chat-room flex w-full">
+    <div className="input-with-sendBtn--chat-room flex w-full absolute left-0 right-0">
       <div className="input--chat-room">
         <div className="addFile--chat-room">
           <svg

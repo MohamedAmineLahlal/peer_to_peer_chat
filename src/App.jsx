@@ -12,7 +12,6 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPageJoinRoom />} />
           <Route path="/create-room" element={<LandingPageCreateRoom />} />
-          <Route path="/chat-room" element={<ChatRoom />} />
           <Route path="/room/:roomID" element={<ChatRoom />} />
           <Route path="*" element={<NoPage />} />
         </Routes>

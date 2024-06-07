@@ -2,6 +2,7 @@ import React from "react";
 import "../../../../styles/ChatRoom/Message.css";
 
 export default function Message(props) {
+  const username = localStorage.getItem("username");
   return (
     <div
       className="info-wrapper--chat"
@@ -13,15 +14,25 @@ export default function Message(props) {
           backgroundColor: props.isSender ? "#9258DC" : "#005899",
         }}
       >
-        <div className="message-content--chat">
-          <p
-            className="message--chat"
+        <div className="message-username-wrapper--chat">
+          <h3
+            className="message-username--chat"
             style={{
               backgroundColor: props.isSender ? "#9258DC" : "#005899",
             }}
           >
-            {props.message}
-          </p>
+            {props.username}
+          </h3>
+          <div className="message-content--chat">
+            <p
+              className="message--chat"
+              style={{
+                backgroundColor: props.isSender ? "#9258DC" : "#005899",
+              }}
+            >
+              {props.message}
+            </p>
+          </div>
         </div>
       </div>
       <div className="time-container--chat">

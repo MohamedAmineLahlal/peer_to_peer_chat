@@ -1,0 +1,21 @@
+.error-alert--landing-page {
+  position: absolute !important;
+  bottom: 25px !important;
+  width: 50% !important;
+  background-color: #3e3c3f !important;
+  border: #cc0000 1px solid !important;
+}
+
+.error-title--landing-page {
+  color: white !important;
+  background-color: #3e3c3f !important;
+}
+
+.error-icon--landing-page {
+  background-color: #3e3c3f !important;
+}
+
+.error-description--landing-page {
+  color: white !important;
+  background-color: #3e3c3f !important;
+}

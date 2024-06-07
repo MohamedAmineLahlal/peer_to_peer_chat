@@ -1,6 +1,7 @@
 .chat-wrapper--chat-room {
   padding-top: 10px;
   background-color: #3e3c3f;
+  flex-grow: 1;
 }
 
 .input-container--chat-room {

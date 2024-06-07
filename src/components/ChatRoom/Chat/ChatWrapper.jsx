@@ -6,10 +6,14 @@ import "../../../styles/ChatRoom/ChatWrapper.css";
 
 export default function ChatWrapper(props) {
   return (
-    <div className="chat-wrapper--chat-room">
+    <div className="chat-wrapper--chat-room relative">
       <Chat messages={props.messages} />
-      <div className="input-container--chat-room">
-        <Input onChange={props.onChange} onClick={props.onClick} />
+      <div className="input-container--chat-room ">
+        <Input
+          value={props.value}
+          onChange={props.onChange}
+          onClick={props.onClick}
+        />
       </div>
     </div>
   );

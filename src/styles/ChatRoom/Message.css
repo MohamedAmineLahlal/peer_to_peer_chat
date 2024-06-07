@@ -10,6 +10,15 @@
   overflow-wrap: break-word;
   overflow: hidden; /* Hide the overflow content */
 }
+.message-username-wrapper--chat {
+  display: flex;
+  flex-direction: column;
+}
+
+.message-username--chat {
+  font-weight: 700;
+  font-size: 14px;
+}
 
 .message-content--chat {
   flex: 1; /* Allow the message content to grow */

@@ -1,6 +1,7 @@
 .input-with-sendBtn--chat-room {
   gap: 5px;
   background-color: #3e3c3f;
+  bottom: 0px;
 }
 .input--chat-room {
   display: flex;

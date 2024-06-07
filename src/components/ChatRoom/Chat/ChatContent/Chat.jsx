@@ -8,6 +8,7 @@ export default function Chat(props) {
       {props.messages.map((message, index) => (
         <Message
           key={index}
+          username={message.username}
           isSender={message.isSender}
           message={message.data}
           time="3:51pm"
