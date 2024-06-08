@@ -42,3 +42,20 @@
   color: #aeaeae;
   background-color: #3e3c3f;
 }
+
+.file-link--chat {
+  text-decoration: underline;
+}
+
+.file-wrapper--chat {
+  display: flex;
+  gap: 10px;
+}
+
+.file-wrapper-text--chat {
+  max-width: 180px;
+}
+.file-wrapper-icon--chat {
+  display: flex;
+  align-items: center;
+}

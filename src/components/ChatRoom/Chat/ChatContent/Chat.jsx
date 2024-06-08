@@ -10,7 +10,15 @@ export default function Chat(props) {
           key={index}
           username={message.username}
           isSender={message.isSender}
-          message={message.data}
+          message={
+            message.messageType === "text-message"
+              ? message.data
+              : message.fileURL
+          }
+          fileName={
+            message.messageType === "file-message" ? message.fileName : ""
+          }
+          messageType={message.messageType}
           time="3:51pm"
         />
       ))}

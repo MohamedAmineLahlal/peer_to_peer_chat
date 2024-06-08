@@ -8,8 +8,6 @@ import ChatWrapper from "../components/ChatRoom/Chat/ChatWrapper";
 import Header from "../components/ChatRoom/Chat/ChatHeader/Header";
 import { Separator } from "@/components/ui/separator";
 import generateUsername from "../utils/generateUsername";
-import FileReaderInput from "react-file-reader";
-import { off } from "process";
 
 const Room = (props) => {
   const peerRef = useRef();
@@ -23,7 +21,6 @@ const Room = (props) => {
   const [peers, setPeers] = useState([]);
   const peersRef = useRef([]);
   const iceCandidateQueue = useRef({});
-  const receivedChunksRef = useRef({ chunks: [], totalSize: 0 });
 
   useEffect(() => {
     socketRef.current = io.connect("http://localhost:8000");
@@ -244,16 +241,11 @@ const Room = (props) => {
   function handleReceiveMessage(e) {
     const message = JSON.parse(e.data);
     if (message.fileBuffer) {
-      handleReceiveFileMessage(e);
+      handleReceiveFileMessage(message);
     } else {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          isSender: false,
-          data: message.text,
-          username: message.username,
-          messageType: "text-message",
-        },
+      setMessages((messages) => [
+        ...messages,
+        { isSender: false, data: message.text, username: message.username },
       ]);
     }
   }
@@ -275,149 +267,54 @@ const Room = (props) => {
       }
     });
 
-    setMessages((prevMessages) => [
-      ...prevMessages,
+    setMessages((messages) => [
+      ...messages,
       {
         isSender: true,
         data: text,
         username: localStorage.getItem("username"),
-        messageType: "text-message",
       },
     ]);
     setText("");
   }
 
   function handleFileChange(event) {
+    console.log("FILEE ADDED");
     const file = event.target.files[0];
-    console.log(file);
-    const chunkSize = 16384;
-    let offset = 0;
-    let sentChunks = 0; // Track the number of sent chunks
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      sendChunk(e.target.result);
-      offset += chunkSize;
-      if (offset < file.size) {
-        readSlice(offset);
-      }
-    };
-
-    const readSlice = (o) => {
-      const slice = file.slice(offset, o + chunkSize);
-      reader.readAsArrayBuffer(slice);
-    };
-
-    function addIfFloat(number) {
-      if (number % 1 === 0) {
-        return number;
-      } else {
-        return number + 1;
-      }
-    }
-
-    const sendChunk = (chunk) => {
-      const message = {
-        fileName: file.name,
-        fileType: file.type,
-        fileBuffer: `${btoa(
-          String.fromCharCode.apply(null, new Uint8Array(chunk))
-        )}`,
-        offset: offset,
-        username: localStorage.getItem("username"),
-        totalSize: file.size,
-        chunksNumber: addIfFloat(Math.ceil(file.size / chunkSize)),
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const buffer = e.target.result;
+        const message = {
+          fileName: file.name,
+          fileType: file.type,
+          fileBuffer: buffer,
+          username: localStorage.getItem("username"),
+        };
+        peersRef.current.forEach(({ dataChannel }) => {
+          if (dataChannel.readyState === "open") {
+            console.log("SENDING : ", JSON.stringify(message));
+            dataChannel.send(JSON.stringify(message));
+          } else {
+            console.error("Data channel is not open");
+          }
+        });
       };
-      peersRef.current.forEach(({ dataChannel }) => {
-        if (dataChannel.readyState === "open") {
-          dataChannel.send(JSON.stringify(message));
-          console.log("CHUNK SENT");
-        } else {
-          console.error("Data Channel is not open");
-        }
-      });
-      sentChunks++;
-
-      if (sentChunks === addIfFloat(Math.ceil(file.size / chunkSize))) {
-        const blob = new Blob([file], { type: file.type });
-        const blobUrl = URL.createObjectURL(blob);
-        setMessages((messages) => [
-          ...messages,
-          {
-            isSender: true,
-            username: localStorage.getItem("username"),
-            messageType: "file-message",
-            data: "",
-            fileURL: blobUrl,
-            fileName: file.name,
-          },
-        ]);
-      }
-    };
-
-    readSlice(0);
+      reader.readAsArrayBuffer(file);
+    }
   }
 
-  function decodeBase64(base64) {
-    const binaryString = atob(base64);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes;
-  }
-
-  function handleReceiveFileMessage(message) {
-    console.log(JSON.parse(message.data));
-    const {
-      fileName,
-      fileType,
-      fileBuffer,
-      offset,
-      totalSize,
-      chunksNumber,
-      username,
-    } = JSON.parse(message.data);
-    console.log(typeof fileBuffer);
-    const fileData = decodeBase64(fileBuffer);
-    console.log("FILE DATA : ", fileBuffer);
-    console.log("CHUNK RECEIVED");
-    console.log("USERNAME : ", username);
-
-    receivedChunksRef.current.chunks[offset] = fileData;
-    receivedChunksRef.current.totalSize = totalSize;
-
-    console.log("FILE SIZE : ", totalSize);
-    console.log(receivedChunksRef.current.chunks);
-    console.log(chunksNumber);
-    if (Object.keys(receivedChunksRef.current.chunks).length === chunksNumber) {
-      receivedChunksRef.current.chunks.sort((a, b) => a.offset - b.offset);
-      console.log("RECEIVED CHUNKS : ", receivedChunksRef.current.chunks);
-
-      const completeFileData = new Blob(receivedChunksRef.current.chunks, {
-        type: fileType,
-      });
-
-      const url = URL.createObjectURL(completeFileData);
-      console.log("FILE RECEIVED");
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          isSender: false,
-          data: "",
-          username: username,
-          messageType: "file-message",
-          fileURL: url,
-          fileName: fileName,
-          isReadyToDownload: true,
-        },
-      ]);
-
-      // Clear received chunks for the next file
-      receivedChunksRef.current.chunks = [];
-      receivedChunksRef.current.totalSize = 0;
-    }
+  function handleReceiveFileMessage(e) {
+    const message = JSON.parse(e.data);
+    console.log("RECEIVED : ", message);
+    const blob = new Blob([message.fileBuffer], { type: message.fileType });
+    const url = URL.createObjectURL(blob);
+    const downloadLink = document.createElement("a");
+    downloadLink.href = url;
+    downloadLink.download = message.fileName;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    downloadLink.remove();
   }
 
   return (
