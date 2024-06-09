@@ -26,6 +26,39 @@ const Room = (props) => {
   const receivedChunksRef = useRef({ chunks: [], totalSize: 0 });
   const [usersState, setUsersState] = useState([]);
 
+  function requestNotificationPermission() {
+    console.log("REQUES notification", Notification.permission);
+    Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        console.log("Notification permission granted");
+      } else {
+        console.log("Notification permission denied");
+      }
+    });
+  }
+
+  function showNotification(message, username, type) {
+    if (Notification.permission === "granted") {
+      if (type === "image") {
+        new Notification(`Message From : ${username}`, {
+          body: message,
+          icon: "../assets/Notifications/image.png",
+        });
+      } else if (type === "message") {
+        new Notification(`Message From : ${username}`, {
+          body: message,
+          icon: "../assets/Notifications/message.png",
+        });
+      } else {
+        new Notification(`Message From : ${username}`, {
+          body: message,
+          icon: "../assets/Notifications/file.png",
+        });
+      }
+    }
+  }
+
+  requestNotificationPermission();
   useEffect(() => {
     socketRef.current = io.connect("http://localhost:8000");
     username.current = generateUsername();
@@ -295,8 +328,13 @@ const Room = (props) => {
   function handleReceiveMessage(e) {
     const message = JSON.parse(e.data);
     if (message.fileBuffer) {
+      if (message.messageType === "image-message") {
+        console.log("IMAGE RECEIVED");
+        showNotification("Image Received", message.username, "image");
+      }
       handleReceiveFileMessage(e);
     } else {
+      showNotification(message.text, message.username, "message");
       setMessages((prevMessages) => [
         ...prevMessages,
         {
@@ -483,6 +521,7 @@ const Room = (props) => {
           },
         ]);
       } else if (messageType === "file-message") {
+        showNotification(fileName, username, "file");
         setMessages((prevMessages) => [
           ...prevMessages,
           {

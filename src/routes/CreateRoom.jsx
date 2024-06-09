@@ -7,6 +7,7 @@ import { sha256 } from "js-sha256";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Terminal } from "lucide-react";
 import "../styles/LandingPage/CreateRoom.css";
+import "../styles/LandingPage/LandingPage.css";
 
 const CreateRoom = () => {
   const navigate = useNavigate();

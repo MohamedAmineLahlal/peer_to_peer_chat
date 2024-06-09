@@ -4,3 +4,20 @@
   justify-content: space-between;
   margin-bottom: 10px;
 }
+
+.left-side-container--chat-room {
+  align-items: center;
+  background-color: #3e3c3f;
+  gap: 20px;
+}
+
+.left-side-container--chat-room svg {
+  background-color: #3e3c3f;
+  fill: white;
+  color: white !important;
+  cursor: pointer;
+}
+
+.left-side-container--chat-room svg path {
+  fill: white !important;
+}
