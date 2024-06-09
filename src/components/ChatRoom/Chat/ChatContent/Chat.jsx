@@ -13,6 +13,8 @@ export default function Chat(props) {
           message={
             message.messageType === "text-message"
               ? message.data
+              : message.messageType === "image-message"
+              ? message.data
               : message.fileURL
           }
           fileName={

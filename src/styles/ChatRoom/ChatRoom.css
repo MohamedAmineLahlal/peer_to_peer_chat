@@ -20,6 +20,7 @@
 
 .chats-background--chat-room {
   background-color: #3e3c3f !important;
+  font-weight: normal;
 }
 
 .chat-container--chat-room {
@@ -88,4 +89,16 @@
   padding: 10px;
   display: flex;
   flex-direction: column;
+}
+
+.circle-state--chat-room {
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+}
+
+.user-state--chat-room {
+  background-color: #3e3c3f;
+  gap: 8px;
+  align-items: center;
 }

@@ -41,10 +41,11 @@ const dummyData = [
   },
 ];
 
-export default function MainTabs() {
+export default function MainTabs(props) {
   const groups = dummyData.filter((chat) => chat.type === "group");
   const persons = dummyData.filter((chat) => chat.type === "person");
-
+  const users = props.users;
+  console.log("USERS : ", users);
   return (
     <Tabs
       defaultValue="All Chats"
@@ -62,6 +63,12 @@ export default function MainTabs() {
           className="tab-element--chat-room font-bold"
         >
           Persons
+        </TabsTrigger>
+        <TabsTrigger
+          value="Current"
+          className="tab-element--chat-room font-bold"
+        >
+          Current
         </TabsTrigger>
       </TabsList>
       <TabsContent value="All Chats" className="chats-container--chat-room">
@@ -124,6 +131,52 @@ export default function MainTabs() {
                 <div key={person.id} className="chats-background--chat-room">
                   <ChatItem chat={person} />
                   {index < persons.length - 1 && <Separator className="my-2" />}
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+      </TabsContent>
+      <TabsContent value="Current" className="chats-container--chat-room">
+        <div className="chats-section--chat-room p-3">
+          <p className="tabs-type--chat-room chats-background--chat-room font-bold">
+            Current
+          </p>
+          <ScrollArea>
+            <div className="chats-background--chat-room">
+              {users.map((user, index) => (
+                <div
+                  key={user.userID}
+                  className="chat-item flex items-center space-x-4 p-2 chats-background--chat-room"
+                >
+                  <img
+                    src="https://via.placeholder.com/150"
+                    alt={user.userID}
+                    className="w-10 h-10 rounded-full"
+                  />
+                  <div className="flex-1 chats-background--chat-room">
+                    <div className="flex justify-between items-center chats-background--chat-room">
+                      <span className="font-semibold chats-background--chat-room">
+                        {user.userID}
+                      </span>
+                      <span className="text-xs text-gray-500 chats-background--chat-room">
+                        3:51
+                      </span>
+                    </div>
+                    <div className="flex items-center chats-background--chat-room">
+                      <div className="flex items-center user-state--chat-room">
+                        <div
+                          className="circle-state--chat-room"
+                          style={{
+                            backgroundColor: user.isOnline ? "green" : "red",
+                          }}
+                        ></div>
+                        <span className="chats-background--chat-room text-sm">
+                          {user.isOnline ? "Online" : "Offline"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

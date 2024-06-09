@@ -24,6 +24,7 @@ const Room = (props) => {
   const peersRef = useRef([]);
   const iceCandidateQueue = useRef({});
   const receivedChunksRef = useRef({ chunks: [], totalSize: 0 });
+  const [usersState, setUsersState] = useState([]);
 
   useEffect(() => {
     socketRef.current = io.connect("http://localhost:8000");
@@ -31,6 +32,13 @@ const Room = (props) => {
     localStorage.setItem("username", username.current);
 
     socketRef.current.emit("join room", roomID);
+
+    socketRef.current.on("connect", () => {
+      console.log("CONNECTED");
+      setInterval(() => {
+        socketRef.current.emit("heartbeat");
+      }, 30000);
+    });
 
     socketRef.current.on("all users", handleAllUsers);
 
@@ -41,7 +49,35 @@ const Room = (props) => {
     socketRef.current.on("answer", handleAnswer);
 
     socketRef.current.on("ice-candidate", handleNewICECandidateMsg);
+
+    socketRef.current.on("user state update", handleUserStateUpdate);
+
+    window.addEventListener("beforeunload", (event) => {
+      if (socketRef.current) {
+        const shouldLeave = confirm("Are you sure you want to leave the chat?");
+        if (shouldLeave) {
+          socketRef.current.emit("disconnect", {
+            userID: socketRef.current.id,
+            roomID: roomID,
+            isUserOnline: false,
+          }); // Send user state change event
+        } else {
+          event.preventDefault(); // Prevent default behavior (leaving) if user cancels
+          event.returnValue = ""; // Chrome requires a string to be returned for legacy reasons
+        }
+      }
+    });
   }, [roomID]);
+
+  function handleUserStateUpdate({ userID, isOnline }) {
+    console.log("RECEIVED USER STATE CHANGE : ", isOnline);
+    console.log(usersState);
+    setUsersState((prevStates) =>
+      prevStates.map((user) =>
+        user.userID === userID ? { ...user, isOnline: isOnline } : user
+      )
+    );
+  }
 
   function handleConnectionError(error) {
     console.error("Connection error:", error);
@@ -55,17 +91,22 @@ const Room = (props) => {
   function handleAllUsers(users) {
     const newPeers = [];
     console.log("USERS RECEIVED : ", users);
-    users.forEach((userID) => {
-      const peerObj = createPeer(userID);
-      console.log("NEW PEER OBJECT : ", peerObj);
+    users.forEach((userObj) => {
+      const peerObj = createPeer(userObj.id);
+      console.log("NEW PEER OBJECT : ", userObj);
+
       peersRef.current.push({
-        peerID: userID,
+        peerID: userObj.userID,
         peer: peerObj.peer,
         dataChannel: peerObj.dataChannel,
       });
       newPeers.push(peerObj.peer);
+      setUsersState((prevStates) => [
+        ...prevStates,
+        { userID: userObj.userID, isOnline: userObj.isOnline },
+      ]);
 
-      handleNegotiationNeededEvent(userID);
+      handleNegotiationNeededEvent(userObj.userID);
     });
 
     setPeers((prevPeers) => [...prevPeers, ...newPeers]);
@@ -91,11 +132,14 @@ const Room = (props) => {
 
     const dataChannel = peer.createDataChannel(`sendChannel_${userID}`);
     dataChannel.onmessage = handleReceiveMessage;
-    dataChannel.onopen = () =>
+    dataChannel.onopen = () => {
+      socketRef.current.emit("user online", { userID: userID });
       console.log(`Data channel with ${userID} is open`);
+    };
     dataChannel.onclose = () =>
       console.log(`Data channel with ${userID} is closed`);
 
+    console.log("USER ID : ", userID);
     peer.onicecandidate = (event) => handleICECandidateEvent(event, userID);
     peer.onnegotiationneeded = () => handleNegotiationNeededEvent(userID);
 
@@ -163,10 +207,17 @@ const Room = (props) => {
     peer.ondatachannel = (event) => {
       peerObj.dataChannel = event.channel;
       peerObj.dataChannel.onmessage = handleReceiveMessage;
-      peerObj.dataChannel.onopen = () =>
+      peerObj.dataChannel.onopen = () => {
+        socketRef.current.emit("user online", { userID: incoming.caller });
         console.log(`Data channel with ${incoming.caller} is open`);
+      };
       peerObj.dataChannel.onclose = () =>
         console.log(`Data channel with ${incoming.caller} is closed`);
+
+      setUsersState((prevStates) => [
+        ...prevStates,
+        { userID: incoming.caller, isOnline: true },
+      ]);
 
       peersRef.current.push({
         peerID: incoming.caller,
@@ -317,6 +368,11 @@ const Room = (props) => {
     }
 
     const sendChunk = (chunk) => {
+      console.log("FILE TYPE SENDING : ", file.type);
+      const messageType = file.type.startsWith("image/")
+        ? "image-message"
+        : "file-message";
+
       const message = {
         fileName: file.name,
         fileType: file.type,
@@ -327,6 +383,7 @@ const Room = (props) => {
         username: localStorage.getItem("username"),
         totalSize: file.size,
         chunksNumber: addIfFloat(Math.ceil(file.size / chunkSize)),
+        messageType: messageType,
       };
       peersRef.current.forEach(({ dataChannel }) => {
         if (dataChannel.readyState === "open") {
@@ -341,17 +398,30 @@ const Room = (props) => {
       if (sentChunks === addIfFloat(Math.ceil(file.size / chunkSize))) {
         const blob = new Blob([file], { type: file.type });
         const blobUrl = URL.createObjectURL(blob);
-        setMessages((messages) => [
-          ...messages,
-          {
-            isSender: true,
-            username: localStorage.getItem("username"),
-            messageType: "file-message",
-            data: "",
-            fileURL: blobUrl,
-            fileName: file.name,
-          },
-        ]);
+        if (file.type.startsWith("image/")) {
+          setMessages((messages) => [
+            ...messages,
+            {
+              isSender: true,
+              username: localStorage.getItem("username"),
+              messageType: "image-message",
+              data: blobUrl,
+              fileName: file.name,
+            },
+          ]);
+        } else {
+          setMessages((messages) => [
+            ...messages,
+            {
+              isSender: true,
+              username: localStorage.getItem("username"),
+              messageType: "file-message",
+              data: "",
+              fileURL: blobUrl,
+              fileName: file.name,
+            },
+          ]);
+        }
       }
     };
 
@@ -378,7 +448,9 @@ const Room = (props) => {
       totalSize,
       chunksNumber,
       username,
+      messageType, // Add messageType to distinguish between image and file messages
     } = JSON.parse(message.data);
+
     console.log(typeof fileBuffer);
     const fileData = decodeBase64(fileBuffer);
     console.log("FILE DATA : ", fileBuffer);
@@ -391,28 +463,39 @@ const Room = (props) => {
     console.log("FILE SIZE : ", totalSize);
     console.log(receivedChunksRef.current.chunks);
     console.log(chunksNumber);
+
     if (Object.keys(receivedChunksRef.current.chunks).length === chunksNumber) {
       receivedChunksRef.current.chunks.sort((a, b) => a.offset - b.offset);
       console.log("RECEIVED CHUNKS : ", receivedChunksRef.current.chunks);
-
+      // If it's a file message, create a file URL and set it as the message data
       const completeFileData = new Blob(receivedChunksRef.current.chunks, {
         type: fileType,
       });
-
-      const url = URL.createObjectURL(completeFileData);
-      console.log("FILE RECEIVED");
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          isSender: false,
-          data: "",
-          username: username,
-          messageType: "file-message",
-          fileURL: url,
-          fileName: fileName,
-          isReadyToDownload: true,
-        },
-      ]);
+      const fileUrl = URL.createObjectURL(completeFileData);
+      if (messageType === "image-message") {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            isSender: false,
+            data: fileUrl,
+            username: username,
+            messageType: "image-message",
+          },
+        ]);
+      } else if (messageType === "file-message") {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            isSender: false,
+            data: "",
+            username: username,
+            messageType: "file-message",
+            fileURL: fileUrl,
+            fileName: fileName,
+            isReadyToDownload: true,
+          },
+        ]);
+      }
 
       // Clear received chunks for the next file
       receivedChunksRef.current.chunks = [];
@@ -430,7 +513,7 @@ const Room = (props) => {
             className="absolute button--chat-room w-100 "
           />
         </div>
-        <MainTabs className="main-tabs--chat-room" />
+        <MainTabs className="main-tabs--chat-room" users={usersState} />
       </div>
       <div className="chat-display--chat-room flex-grow w-full sm:w-7/10">
         <div className="content-wrapper--chat-room flex flex-col">
