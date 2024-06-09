@@ -72,7 +72,7 @@ export default function MainTabs(props) {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="All Chats" className="chats-container--chat-room">
-        <div className="chats-section--chat-room p-3 ">
+        <div className="chats-section--chat-room scrollbar-custom p-3 ">
           <p className="tabs-type--chat-room chats-background--chat-room font-bold">
             Groups
           </p>
@@ -87,7 +87,7 @@ export default function MainTabs(props) {
             </div>
           </ScrollArea>
         </div>
-        <div className="chats-section--chat-room p-4">
+        <div className="chats-section--chat-room scrollbar-custom p-4">
           <p className="tabs-type--chat-room chats-background--chat-room font-bold">
             Persons
           </p>
@@ -104,7 +104,7 @@ export default function MainTabs(props) {
         </div>
       </TabsContent>
       <TabsContent value="Groups" className="chats-container--chat-room">
-        <div className="chats-section--chat-room p-3">
+        <div className="chats-section--chat-room scrollbar-custom p-3">
           <p className="tabs-type--chat-room chats-background--chat-room font-bold">
             Groups
           </p>
@@ -121,7 +121,7 @@ export default function MainTabs(props) {
         </div>
       </TabsContent>
       <TabsContent value="Persons" className="chats-container--chat-room">
-        <div className="chats-section--chat-room p-3">
+        <div className="chats-section--chat-room scrollbar-custom p-3">
           <p className="tabs-type--chat-room chats-background--chat-room font-bold">
             Persons
           </p>
@@ -138,7 +138,7 @@ export default function MainTabs(props) {
         </div>
       </TabsContent>
       <TabsContent value="Current" className="chats-container--chat-room">
-        <div className="chats-section--chat-room p-3">
+        <div className="chats-section--chat-room scrollbar-custom p-3">
           <p className="tabs-type--chat-room chats-background--chat-room font-bold">
             Current
           </p>
